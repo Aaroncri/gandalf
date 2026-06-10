@@ -207,13 +207,18 @@ class Attacker(ABC):
             winner = argmax(scores)
             self.extend_prefix(winner)
             self.change_num_states(min(self.num_states() + 1, self._prompt.MAX_STATES))
+            self.NUM_TRIES = 2*((self.NUM_TRIES + 1)//2)
             print(f"Prefix extended to {self.prefix()} by winner: {winner}")
             self.last_test = {'result': "Extension", 
                               'scores': scores}
         
         else:
             print("inconclusive!")
-            self.NUM_TRIES += 1
+            most = max(scores.values())
+            self.NUM_TRIES += 1 
+            for k in scores.keys(): 
+                if scores[k] + 1 < most or scores[k] == 0: 
+                    scores.pop(k)
             self.last_test = {'result': "Inconclusive", 
                               'scores': scores}
             return None
